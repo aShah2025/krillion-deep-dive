@@ -2,124 +2,83 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#071f24">
-  <meta name="description" content="Think of the answer nobody else will. Seven prompts, 25 seconds each, and an ocean of rare knowledge to explore.">
-  <title>Krillion — Rare answers. Deeper waters.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#123d47">
+  <meta name="description" content="One little krill, two big adventures. Play Noillirk to think like the crowd, or Krillion to find the rarest answer.">
+  <title>Krillion &amp; Noillirk — Choose your adventure</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="styles.css">
   <script src="data.js" defer></script>
+  <script src="world.js" defer></script>
   <script src="game.js" defer></script>
 </head>
-<body data-state="ready">
-  <div class="site-shell">
-    <header class="site-header">
-      <a class="brand" href="./" aria-label="Krillion home">
-        <svg viewBox="0 0 40 40" aria-hidden="true"><path fill="currentColor" d="M7 11h8v5h6v5h7v-6h5v12h-7v5H15v-5H9v-5H4v-6h3zM25 6h4v7h-4zM32 4h4v9h-4zM7 29h5v6H7z"/><path d="M12 16h4v4h-4z" fill="#071f24"/></svg>
-        <span>krillion<span class="brand-period">.</span></span>
-      </a>
-      <div class="header-caption">A LITTLE KNOWLEDGE. A LOT OF OCEAN.</div>
-      <nav class="header-actions" aria-label="Game options">
-        <button id="help-button" class="text-button"><span class="help-icon">?</span> How to play</button>
-        <button id="sound-button" class="icon-button" aria-label="Turn sound on" aria-pressed="false" title="Turn sound on">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path id="sound-waves" d="m16 9 6 6m0-6-6 6"/></svg>
-        </button>
+<body data-state="ready" data-mode="krillion">
+  <div class="game-app">
+    <canvas id="world-canvas" aria-hidden="true"></canvas>
+    <div class="scene-shade" aria-hidden="true"></div>
+    <header class="topbar">
+      <button id="home-button" class="brand" aria-label="Return to game selection">
+        <svg viewBox="0 0 40 40" aria-hidden="true"><path fill="currentColor" d="M7 11h8v5h6v5h7v-6h5v12h-7v5H15v-5H9v-5H4v-6h3zM25 6h4v7h-4zM32 4h4v9h-4zM7 29h5v6H7z"/><path d="M12 16h4v4h-4z" fill="#183a3f"/></svg>
+        <span id="brand-name">krillion<span>.</span></span><span class="brand-tag">&amp; noillirk</span>
+      </button>
+      <span class="topbar-meta">ONE LITTLE KRILL. TWO BIG ADVENTURES.</span>
+      <nav class="topbar-actions" aria-label="Game controls">
+        <button id="change-mode-button" class="text-button">Switch game</button>
+        <button id="help-button" class="icon-button" aria-label="How to play" title="How to play">?</button>
+        <button id="sound-button" class="icon-button" aria-label="Turn sound on" aria-pressed="false" title="Turn sound on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path id="sound-waves" d="m16 9 6 6m0-6-6 6"/></svg></button>
+        <button id="fullscreen-button" class="icon-button" aria-label="Enter fullscreen" title="Fullscreen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 9V4h5m6 0h5v5m0 6v5h-5M9 20H4v-5"/></svg></button>
       </nav>
     </header>
-
-    <main class="game-layout">
-      <div class="main-column">
-        <section class="intro" aria-labelledby="game-heading">
-          <div class="eyebrow"><span class="little-wave">≈</span> THE RARE-ANSWER TRIVIA DIVE</div>
-          <h1 id="game-heading">Rare answers.<br><em>Deeper waters.</em></h1>
-          <p>Think of the answer nobody else will.<br class="mobile-break"> The rarer your answer, the deeper you go.</p>
-        </section>
-
-        <section id="game-card" class="game-card" aria-label="Trivia game">
-          <div class="card-topline">
-            <div class="round-info"><span class="overline">YOUR EXPEDITION</span><div>Prompt <strong id="round-number">1</strong><span class="muted"> / 7</span><div id="progress-dots" class="progress-dots" aria-label="0 of 7 prompts completed"></div></div></div>
-            <div id="timer" class="timer" role="timer" aria-label="25 seconds remaining"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="timer-track" cx="32" cy="32" r="28"/><circle id="timer-ring" cx="32" cy="32" r="28"/></svg><span id="timer-value">25</span><span class="timer-unit">SEC</span></div>
-          </div>
-
-          <div id="prompt-area" class="prompt-area">
-            <div id="category-label" class="category-label"><span id="category-icon" aria-hidden="true">◎</span><span id="prompt-category">GEOGRAPHY</span></div>
-            <h2 id="prompt-title">Name a country with a red and white flag.</h2>
-            <p id="prompt-hint" class="prompt-hint">A national flag with only red and white. Any shade of red counts.</p>
-
-            <form id="answer-form" autocomplete="off">
-              <div class="answer-field">
-                <input id="answer-input" role="combobox" aria-label="Your answer" aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false" placeholder="Your rare find goes here…" maxlength="120" disabled spellcheck="false">
-                <kbd id="enter-key" aria-hidden="true">↵</kbd>
-                <ul id="suggestions" role="listbox" aria-label="Answer suggestions" hidden></ul>
-              </div>
-              <div id="input-note" class="input-note">Small typos forgiven. Big brains encouraged.</div>
-              <button id="start-button" class="primary-button" type="button"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10 2v12m-4-4 4 4 4-4M4 13v4h12v-4"/></svg> Let's dive in</button>
-              <button id="submit-button" class="primary-button" type="submit" hidden>Lock in answer <span class="button-key">ENTER</span></button>
-            </form>
-          </div>
-
-          <div id="feedback-area" class="feedback-area" aria-live="polite" hidden>
-            <div id="feedback-symbol" class="feedback-symbol">✧</div>
-            <div id="feedback-tier" class="eyebrow">NICHE FIND</div>
-            <h2 id="feedback-title">Now that's a deep cut.</h2>
-            <p id="feedback-answer"></p>
-            <div class="feedback-stats"><span><strong id="feedback-points">+60</strong> points</span><span><strong id="feedback-depth">600</strong> meters deeper</span></div>
-            <p id="feedback-detail" class="prompt-hint"></p>
-            <button id="next-button" class="primary-button">Keep diving <span class="button-key">ENTER</span></button>
-          </div>
-
-          <div class="card-bottomline"><span><span class="mini-dot"></span><span id="dive-status">Ready at the surface</span></span><span>1 point = 10 meters</span></div>
-        </section>
-
-        <section id="results" class="results" aria-labelledby="results-heading" hidden>
-          <div class="eyebrow">EXPEDITION COMPLETE</div>
-          <h2 id="results-heading">Every answer took you somewhere.</h2>
-          <p id="results-description"></p>
-          <div class="result-metrics"><div><span>FINAL SCORE</span><strong id="final-score">0<span> / 700</span></strong></div><div><span>DEPTH REACHED</span><strong id="final-depth">0<span> m</span></strong></div></div>
-          <div class="table-scroll"><table id="summary-table"><thead><tr><th>Prompt & answer</th><th>Rarity</th><th>Points</th></tr></thead><tbody id="summary-body"></tbody></table></div>
-          <button id="restart-button" class="primary-button"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 6a7 7 0 1 1-1 7M3 2v5h5"/></svg> Play again · New shuffle</button>
-        </section>
-
-        <section class="rarity-guide" aria-label="Rarity scoring guide">
-          <div class="guide-title">THE DEEPER THE CUT, THE BIGGER THE CATCH.</div>
-          <div class="tier-grid">
-            <div class="tier-item common"><div class="tier-gem">◆</div><div><span>Surface</span><strong>10 <small>pts</small></strong></div></div>
-            <div class="tier-item uncommon"><div class="tier-gem">◆<i>◆</i></div><div><span>Uncommon</span><strong>30 <small>pts</small></strong></div></div>
-            <div class="tier-item niche"><div class="tier-gem">✧</div><div><span>Niche</span><strong>60 <small>pts</small></strong></div></div>
-            <div class="tier-item ultra"><div class="tier-gem">✷</div><div><span>One in a Krillion</span><strong>100 <small>pts</small></strong></div></div>
-          </div>
-        </section>
-        <div class="game-footnote"><span>7 prompts</span><span>25 seconds each</span><span>An ocean of possibilities</span></div>
+    <div id="flight-hud" class="flight-hud" hidden>
+      <div class="hud-progress"><span class="hud-label">PROMPT</span><strong><span id="round-number">1</span><small> / 7</small></strong><div id="progress-dots" class="progress-dots" aria-label="0 of 7 prompts completed"></div></div>
+      <div class="hud-distance" role="status" aria-live="off"><span class="hud-label" id="distance-label">DEPTH</span><div><strong id="depth-value">0</strong><span id="distance-unit">m</span></div><span id="depth-zone">At the surface</span></div>
+      <div class="hud-score"><span class="hud-label">SCORE</span><strong id="total-score">0 <small>pts</small></strong><span class="hud-max">700 possible</span></div>
+    </div>
+    <main id="menu-screen" class="menu-screen">
+      <div class="eyebrow">A LITTLE KNOWLEDGE. A BIG ADVENTURE.</div>
+      <h1>One little krill.<br> Two big adventures.</h1>
+      <p class="menu-description">Go with the crowd, or think of the answer nobody else will.</p>
+      <div class="mode-options" role="group" aria-label="Choose your game">
+        <button id="choose-krillion" class="mode-option" aria-pressed="true">
+          <span class="mode-icon ocean-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M3 20h14v4h13v-4h14v4h17v37H3z" fill="#469d9d"/><path d="M3 32h14v4h13v-4h14v4h17v25H3z" fill="#2e6f7e"/><path d="M18 32h28v17H18zM13 37h38v8H13zM27 25h10v7H27z" fill="#f5ce81"/><path d="M24 36h7v7h-7zM36 36h7v7h-7z" fill="#204855"/><path d="M32 4v15m-5-5 5 5 5-5" fill="none" stroke="#ebecd6" stroke-width="3"/></svg></span>
+          <span class="mode-option-text"><span class="mode-badge">RARE ANSWERS WIN</span><h2>Krillion</h2><p>Think obscure. Dive deeper.</p><small>Into the deep sea</small></span><span class="mode-check" aria-hidden="true">✓</span>
+        </button>
+        <button id="choose-noillirk" class="mode-option" aria-pressed="false">
+          <span class="mode-icon sky-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M8 5h15v6h5v15h-5v6h-5l-2 17-2-17H9v-6H4V11h4z" fill="#ed847a"/><path d="M30 1h15v6h5v15h-5v6h-5l-3 21-2-21h-5v-6h-5V7h5z" fill="#eac775"/><path d="M46 13h12v5h4v13h-4v5h-4l-9 17 5-17h-4v-5h-4V18h4z" fill="#8bbdc6"/><path d="M23 49h20v11H23zM19 52h5v5h-5zM43 50h5v8h-5z" fill="#ec9b9a"/><path d="M35 51h3v3h-3z" fill="#253d4a"/></svg></span>
+          <span class="mode-option-text"><span class="mode-badge">COMMON ANSWERS WIN</span><h2>Noillirk</h2><p>Think together. Fly higher.</p><small>Up into the open sky</small></span><span class="mode-check" aria-hidden="true">✓</span>
+        </button>
       </div>
-
-      <aside id="ocean-panel" class="ocean-panel" aria-label="Live ocean depth">
-        <div class="ocean-header"><span class="overline">THE DESCENT</span><span class="live-indicator"><i></i> LIVE DEPTH</span></div>
-        <div class="depth-readout"><strong id="depth-value">0</strong><span>m</span><div id="depth-zone">Sunlight zone</div></div>
-        <div class="ocean-viewport" id="ocean-viewport">
-          <div id="ocean-world" class="ocean-world"><img src="ocean.svg" width="420" height="1900" alt="" draggable="false"><div id="depth-markers" class="depth-markers"></div></div>
-          <div class="depth-ruler" aria-hidden="true"></div>
-          <div class="submarine" aria-hidden="true">
-            <svg viewBox="0 0 220 135"><defs><linearGradient id="sub-body" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d5ec7a"/><stop offset="1" stop-color="#8eaf50"/></linearGradient><linearGradient id="headlight"><stop stop-color="#d9f6a0" stop-opacity=".13"/><stop offset="1" stop-color="#d9f6a0" stop-opacity="0"/></linearGradient></defs><path d="m156 61 64-24v71l-64-23z" fill="url(#headlight)"/><path d="M84 40V25h23v5H91v10" fill="none" stroke="#88ad69" stroke-width="6"/><path d="M52 62H35v20h17" fill="#71945a"/><path d="M29 56h7v33h-7l-7-8V64z" fill="#a7c46a"/><rect x="46" y="42" width="116" height="59" rx="29.5" fill="url(#sub-body)"/><path d="M54 84h100v8H62z" fill="#688b50" opacity=".45"/><path d="M83 42v59M132 45v52" stroke="#6f9559" stroke-width="2" opacity=".7"/><circle cx="107" cy="70" r="18" fill="#719657"/><circle cx="107" cy="70" r="13" fill="#123d41" stroke="#d5ea91" stroke-width="3"/><path d="m100 63 10-3-6 14-8 2z" fill="#73b6ac" opacity=".55"/><circle cx="151" cy="71" r="5" fill="#e1f6b5"/><path d="M75 100v8h48v-8" fill="none" stroke="#749655" stroke-width="5"/><path d="M62 56h7M62 62h7M62 68h7" stroke="#5d8452" stroke-width="2"/><g fill="none" stroke="#92c7b1" opacity=".5"><circle cx="14" cy="54" r="3"/><circle cx="4" cy="40" r="2"/><circle cx="20" cy="29" r="4"/></g></svg>
-          </div>
-          <div class="you-marker"><span>YOU ARE HERE</span><i></i></div>
-          <div id="ocean-event" class="ocean-event">There's a whole ocean below you.</div>
-        </div>
-        <div class="ocean-bottom"><div class="score-readout"><span>TOTAL SCORE</span><strong id="total-score">0 <small>pts</small></strong></div><div class="target-readout"><span>THE ULTIMATE DIVE</span><strong>7,000 <small>m</small> <span>◇</span></strong></div></div>
-      </aside>
+      <p id="mode-description" class="mode-description">The rarer your answer, the deeper your little explorer goes.</p>
+      <button id="start-button" class="primary-button">Play Krillion</button>
+      <div class="menu-footnote"><span>7 prompts</span><span>25 seconds each</span><span>Play as much as you like</span></div>
+      <div class="personal-bests"><span>Best dive <strong id="best-krillion">0 m</strong></span><span>Best climb <strong id="best-noillirk">0 m</strong></span></div>
     </main>
-    <footer class="site-footer"><span>STAY CURIOUS. GO DEEPER.</span><span>Made for the wonderfully obscure.</span><span>Not affiliated with the original Krillion.</span></footer>
+    <section id="game-card" class="play-dock" aria-label="Trivia game" hidden>
+      <div class="card-topline"><span id="round-caption" class="round-caption">KRILLION · RARE ANSWERS WIN</span><div id="timer" class="timer" role="timer" aria-label="25 seconds remaining"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="timer-track" cx="32" cy="32" r="28"/><circle id="timer-ring" cx="32" cy="32" r="28"/></svg><strong id="timer-value">25</strong><span>SEC</span></div></div>
+      <div id="prompt-area" class="prompt-area">
+        <div id="prompt-category" class="category-label">GEOGRAPHY</div><h2 id="prompt-title">Name a country with a red and white flag.</h2><p id="prompt-hint" class="prompt-hint"></p>
+        <form id="answer-form" autocomplete="off">
+          <div class="answer-field"><input id="answer-input" role="combobox" aria-label="Your answer" aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false" placeholder="Type your answer…" maxlength="120" spellcheck="false" enterkeyhint="go"><kbd aria-hidden="true">↵</kbd><ul id="suggestions" role="listbox" aria-label="Answer suggestions" hidden></ul></div>
+          <p id="input-note" class="input-note" aria-live="polite">Small typos are okay. Trust your first thought.</p><div class="answer-actions"><button id="pass-button" type="button" class="secondary-button">Pass</button><button id="submit-button" type="submit" class="primary-button">Lock it in <span class="button-key">ENTER</span></button></div>
+        </form>
+      </div>
+      <div id="feedback-area" class="feedback-area" aria-live="polite" hidden>
+        <div class="feedback-top"><span id="feedback-symbol" class="feedback-symbol">✦</span><span id="feedback-tier" class="eyebrow">ULTRA-RARE</span></div><h2 id="feedback-title">One in a Krillion.</h2><p id="feedback-answer"></p>
+        <div class="feedback-stats"><span><strong id="feedback-points">+100</strong> points</span><span><strong id="feedback-depth">1,000</strong> m <span id="feedback-direction">deeper</span></span></div><p id="feedback-detail" class="prompt-hint"></p>
+        <div class="answer-board-label">A FEW ANSWERS FROM OUR BOARD <span>CURATED</span></div><ul id="answer-board" class="answer-board"></ul><button id="next-button" class="primary-button">Next prompt <span class="button-key">ENTER</span></button>
+      </div>
+      <div class="card-bottomline"><span id="dive-status">Find your answer.</span><span>1 point = 10 meters</span></div>
+    </section>
+    <section id="results" class="results" aria-labelledby="results-heading" hidden>
+      <div class="eyebrow" id="results-eyebrow">EXPEDITION COMPLETE</div><h2 id="results-heading">What a little adventure.</h2><p id="results-description"></p>
+      <div class="result-metrics"><div><span>FINAL SCORE</span><strong id="final-score">0<span> / 700</span></strong></div><div><span id="final-distance-label">DEPTH REACHED</span><strong id="final-depth">0<span> m</span></strong></div></div>
+      <div class="table-scroll"><table id="summary-table"><thead><tr><th>Prompt &amp; answer</th><th id="summary-tier-label">Rarity</th><th>Points</th></tr></thead><tbody id="summary-body"></tbody></table></div>
+      <div class="result-actions"><button id="restart-button" class="primary-button">Play again · New shuffle</button><button id="copy-result-button" class="secondary-button">Copy result</button></div><button id="results-menu-button" class="text-button">Try the other game</button>
+    </section>
+    <section id="rarity-guide" class="rarity-guide" aria-label="Scoring guide"><div class="guide-title" id="guide-title">RARE ANSWERS TAKE YOU DEEPER</div><div class="tier-grid" id="tier-grid"></div></section>
+    <footer class="scene-footer"><span id="scene-caption" class="scene-caption">A whole ocean of possibilities.</span><span class="source-note">7 prompts. One little adventure.</span></footer>
   </div>
-
-  <dialog id="help-dialog" aria-labelledby="help-title">
-    <button id="close-help" class="dialog-close" aria-label="Close instructions">×</button>
-    <div class="eyebrow">YOUR DIVE BRIEFING</div><h2 id="help-title">Obscure is a superpower.</h2>
-    <p>Answer <strong>7 shuffled prompts</strong>, with <strong>25 seconds</strong> for each. Type an answer, then lock it in. Think past the obvious: rare answers earn more points.</p>
-    <ul class="help-tiers"><li><span class="common">◆ Common / Surface</span><strong>10 pts</strong></li><li><span class="uncommon">◆ Uncommon</span><strong>30 pts</strong></li><li><span class="niche">✧ Niche</span><strong>60 pts</strong></li><li><span class="ultra">✷ One in a Krillion</span><strong>100 pts</strong></li></ul>
-    <p>Every point takes you <strong>10 meters deeper</strong>. An invalid answer earns 0. When time runs out, you automatically move to the next prompt with 0 points.</p>
-    <p>Small, unambiguous typos and familiar aliases are accepted. Type at least 3 letters for matching suggestions; use ↑ and ↓ to choose. The local answer bank is curated, and rarity tiers are game ratings rather than live player statistics.</p>
-    <p class="help-timer-note">Your timer keeps running while this briefing is open.</p>
-    <button id="help-done" class="primary-button">Got it. Let's go deep.</button>
-  </dialog>
+  <dialog id="help-dialog" aria-labelledby="help-title"><button id="close-help" class="dialog-close" aria-label="Close instructions">×</button><div class="eyebrow">YOUR LITTLE FIELD GUIDE</div><h2 id="help-title">How to play</h2><p id="help-intro"></p><ul id="help-tiers" class="help-tiers"></ul><p id="help-mode"></p><p>Answers that aren’t on the list let you try again while the clock runs. Small, unambiguous typos and familiar aliases count. Use ↑ and ↓ to choose autocomplete suggestions, then Enter to select.</p><p>Answer boards and tiers are curated game ratings, rather than live player statistics. Best scores are saved only in this browser.</p><p class="help-timer-note">The timer keeps running while this guide is open.</p><button id="help-done" class="primary-button">Got it. Let’s play.</button></dialog>
   <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
 </body>
 </html>
